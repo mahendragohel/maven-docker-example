@@ -12,6 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'mvn clean install'
+                sh "helm package target/classes/helm"
             }
         }
         stage('Test') {
