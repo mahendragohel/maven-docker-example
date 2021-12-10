@@ -26,18 +26,11 @@ pipeline {
                 }
             }
         }
-        stage('Build Docker Image'){
+
+        stage("Generate Helm chart and Upload to Nexus"){
             steps{
-                sh "docker build -t mahendragohel/kafka-example:${env.BUILD_ID} ."
-            }
-        }
-        stage('Push Docker image') {
-            environment {
-                DOCKER_HUB_LOGIN = credentials('docker-hub')
-            }
-            steps {
-                sh 'docker login --username=$DOCKER_HUB_LOGIN_USR --password=$DOCKER_HUB_LOGIN_PSW'
-                sh "docker push mahendragohel/kafka-example:${env.BUILD_ID}"
+                sh "helm package target/classes/helm"
+                sh "curl -v -F file=@springboot-0.1.0.tgz -u admin:admin http://localhost:8081/service/rest/v1/components?repository==helm-release"
             }
         }
     }
